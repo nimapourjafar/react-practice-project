@@ -1,23 +1,43 @@
-import logo from './logo.svg';
 import './App.css';
+import { useState } from "react";
+import RecipeTile from "./RecipeTile"
+import axios from 'axios'
 
 function App() {
+  const [query, setQuery] = useState("");
+  const [recipes, setRecipes] = useState([]);
+  const APP_ID = "4a46df72"
+  const APP_KEY ="f88a7be62d10c8f415e773b413449456"
+  const url= `https://api.edamam.com/search?q=${query}=${APP_ID}&app_key=${APP_KEY}`
+
+  const getRecipes = async ()=>{
+    const res = await axios.get(url);
+    setRecipes(res.data.hits)
+    console.log(res)
+  }
+  const onSubmit = (e) => {
+    getRecipes();
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <h1 onClick={getRecipes}>Hello</h1>
+      <form className="app__searchForm" onSubmit={onSubmit}>
+        <input
+          className="app__input"
+          type="text"
+          placeholder="enter ingridient"
+          autoComplete="Off"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <input className="app__submit" type="submit" value="Search" />
+      </form>
+      <div className="app__recipes">
+        {recipes !==[] && recipes.map((recipe)=>{
+          return <RecipeTile recipe={recipe}/>
+        })}
+      </div>
     </div>
   );
 }
